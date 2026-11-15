@@ -173,16 +173,16 @@ function render(tag){
   // plain-English glossary shown as a hover tooltip (native title) on each chip
   const GLOSS={
     'Start cap':'Starting capital of the backtest.',
-    'End':'Ending portfolio value after all trades, fees and tax.',
-    'Net %':'Total return over the whole period: (End - Start) / Start.',
-    'CAGR':'Compound Annual Growth Rate - the average yearly return that compounds to this result.',
+    'End':'Ending portfolio value AFTER all commissions and taxes (cash + open positions - tax).',
+    'Net %':'Total return over the whole period, AFTER commissions and taxes: (End - Start) / Start. This is what actually remains.',
+    'CAGR':'Compound Annual Growth Rate - the average yearly return (after commissions and taxes) that compounds to this result.',
     'Max DD':'Maximum drawdown - the largest peak-to-trough drop in portfolio value. Less negative is better.',
     'Sharpe':'Sharpe ratio - return per unit of volatility (risk-adjusted). Higher is better; above 1 is good.',
     'Round-trips':'Number of completed trades (a buy followed by its sell).',
     'Win rate':'Share of round-trips that closed with a profit.',
     'PF':'Profit factor - gross profit divided by gross loss. Above 1 means profitable; higher is better.',
-    'Fee/side':'Commission charged on each side of a trade (buy and sell).',
-    'Tax':'Capital-gains tax on annual net profit (German rate with loss carry-forward).',
+    'Fee/side':'Commission charged on each side of a trade (buy and sell), already subtracted from returns.',
+    'Tax':'Capital-gains tax on annual net profit (German rate with loss carry-forward), already subtracted from End and Net %.',
     'Open now':'Positions still held open at the end of the backtest.',
     'Last fill':'Date of the most recent executed trade.'
   };
