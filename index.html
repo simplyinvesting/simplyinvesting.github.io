@@ -41,6 +41,13 @@
  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
  .chip{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 14px;min-width:100px}
  .chip .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+ .chip.has-gloss{cursor:help;position:relative}
+ .chip.has-gloss .k{border-bottom:1px dotted var(--muted);display:inline-block}
+ .chip.has-gloss::after{content:attr(data-gloss);position:absolute;left:0;top:calc(100% + 8px);z-index:50;
+   width:240px;max-width:70vw;background:var(--panel2);color:var(--text);border:1px solid var(--accent);
+   border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.45;font-weight:400;text-transform:none;
+   letter-spacing:normal;box-shadow:0 6px 20px rgba(0,0,0,.5);opacity:0;visibility:hidden;transition:opacity .12s;pointer-events:none}
+ .chip.has-gloss:hover::after{opacity:1;visibility:visible}
  .chip .v{font-size:18px;font-weight:600;margin-top:2px}
  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:16px}
  .card h2{font-size:14px;margin:0 0 12px}
@@ -163,7 +170,23 @@ function render(tag){
   if(s.sharpe!=null) chips.push(['Sharpe',s.sharpe]);
   chips.push(['Round-trips',f0(s.trips)],['Win rate',`${s.wr}%`],['PF',s.pf],['Fee/side',`$${s.fee}`],['Tax',`${s.tax_pct}%`],['Open now',f0(s.n_open)],['Last fill',s.last]);
   const srcNote = s.src==='engine' ? `<div class="note" style="margin-bottom:10px">Headline metrics (End, Net %, CAGR, Max DD, Sharpe) are the engine's realistic figures: compounding, growing slot count as equity rises, and German annual tax with loss carry-forward. The equity curve below is a linear cumulative sum of per-trade net and is shown for shape, not level.</div>` : '';
-  let h=`<div class="chips">`+chips.map(([k,v])=>`<div class="chip"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')+`</div>`+srcNote;
+  // plain-English glossary shown as a hover tooltip (native title) on each chip
+  const GLOSS={
+    'Start cap':'Starting capital of the backtest.',
+    'End':'Ending portfolio value after all trades, fees and tax.',
+    'Net %':'Total return over the whole period: (End - Start) / Start.',
+    'CAGR':'Compound Annual Growth Rate - the average yearly return that compounds to this result.',
+    'Max DD':'Maximum drawdown - the largest peak-to-trough drop in portfolio value. Less negative is better.',
+    'Sharpe':'Sharpe ratio - return per unit of volatility (risk-adjusted). Higher is better; above 1 is good.',
+    'Round-trips':'Number of completed trades (a buy followed by its sell).',
+    'Win rate':'Share of round-trips that closed with a profit.',
+    'PF':'Profit factor - gross profit divided by gross loss. Above 1 means profitable; higher is better.',
+    'Fee/side':'Commission charged on each side of a trade (buy and sell).',
+    'Tax':'Capital-gains tax on annual net profit (German rate with loss carry-forward).',
+    'Open now':'Positions still held open at the end of the backtest.',
+    'Last fill':'Date of the most recent executed trade.'
+  };
+  let h=`<div class="chips">`+chips.map(([k,v])=>{const g=GLOSS[k];return `<div class="chip${g?' has-gloss':''}"${g?` data-gloss="${g}"`:''}><div class="k">${k}</div><div class="v">${v}</div></div>`;}).join('')+`</div>`+srcNote;
   h+=`<div class="card"><h2>Equity curve (cumulative net)</h2><canvas id="eq"></canvas></div>`;
   h+=`<div class="card"><h2>&#128188; Open positions (${d.open.length})</h2><div class="tbl-wrap"><table><thead><tr><th>Ticker</th><th>Leg</th><th>Buy</th><th>Shares</th><th>Buy $</th><th>Regime</th></tr></thead><tbody>`+
     (d.open.map(r=>`<tr><td>${tk(r[0])}</td><td><span class="tag ${r[1]}">${r[1]}</span></td><td>${r[2]}</td><td>${f0(r[3])}</td><td>$${r[4]}</td><td><span class="tag ${r[5]}">${r[5]}</span></td></tr>`).join('')||'<tr><td colspan=6 style="color:var(--muted)">none</td></tr>')+`</tbody></table></div></div>`;
