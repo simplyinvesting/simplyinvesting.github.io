@@ -24,6 +24,10 @@
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "zcfmw1a37x");
+    // GDPR consent default: start WITHOUT analytics cookies. The cookie banner
+    // (near </body>) upgrades to cookies via clarity("consent") once the visitor
+    // clicks Accept, and that choice is remembered in localStorage across visits.
+    window.clarity && window.clarity("consent", false);
 </script>
 <style>
  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--border:#30363d;--text:#e6edf3;
@@ -277,4 +281,46 @@ if(!D.small_ids || !D.small_ids.length){ var sl=document.querySelector('#tabbar_
   top.querySelector('[data-top="dash"]').onclick=function(){ show('dash'); };
 })();
 render(cur);
-</script></body></html>
+</script>
+<!-- Cookie consent banner for Microsoft Clarity (GDPR). Clarity starts cookieless
+     (consent=false in the loader above); Accept upgrades to cookies, and the
+     choice is remembered in localStorage so it is asked only once per browser. -->
+<div id="cookie-banner" style="display: none; position: fixed; bottom: 16px; right: 16px; max-width: 340px; background: #1e293b; color: #f8fafc; padding: 14px 16px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-family: system-ui, sans-serif; font-size: 13px; z-index: 9999; line-height: 1.4;">
+  <p style="margin: 0 0 10px 0;">
+    This site uses cookies for analytics (Microsoft Clarity) to understand how visitors use the dashboard.
+  </p>
+  <div style="display: flex; gap: 8px; justify-content: flex-end;">
+    <button id="cookie-decline" style="background: transparent; color: #94a3b8; border: 1px solid #475569; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+      Decline
+    </button>
+    <button id="cookie-accept" style="background: #3b82f6; color: #ffffff; border: none; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 500;">
+      Accept
+    </button>
+  </div>
+</div>
+<script>
+  (function() {
+    var banner = document.getElementById('cookie-banner');
+    var consent = localStorage.getItem('clarity_consent');
+    function grantClarityConsent() {
+      if (typeof window.clarity === 'function') { window.clarity('consent'); }
+    }
+    if (consent === 'granted') {
+      grantClarityConsent();
+    } else if (consent === 'denied') {
+      /* visitor declined -- Clarity stays cookieless, nothing to do */
+    } else {
+      banner.style.display = 'block';
+    }
+    document.getElementById('cookie-accept').addEventListener('click', function() {
+      localStorage.setItem('clarity_consent', 'granted');
+      banner.style.display = 'none';
+      grantClarityConsent();
+    });
+    document.getElementById('cookie-decline').addEventListener('click', function() {
+      localStorage.setItem('clarity_consent', 'denied');
+      banner.style.display = 'none';
+    });
+  })();
+</script>
+</body></html>
